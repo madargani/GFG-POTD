@@ -14,5 +14,6 @@ class Solution:
                 i += 1
             cur.data = i
             freqs[i] -= 1
+            cur = cur.next
             
         return head
