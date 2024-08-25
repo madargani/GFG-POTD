@@ -1,15 +1,22 @@
 #!/bin/bash
 # My First Script
 
-url="https://practiceapi.geeksforgeeks.org/api/vr/problems-of-day/problems/previous/?year=2024&month=8"
+year=${1:-$(TZ='Asia/Kolkata' date +%Y)}
+month=${2:-$(TZ='Asia/Kolkata' date +%m)}
+day=${3:-$(TZ='Asia/Kolkata' date +%d)}
 
-date=${1:-$(TZ='Asia/Kolkata' date +%F)}
+url="https://practiceapi.geeksforgeeks.org/api/vr/problems-of-day/problems/previous/?year=$year&month=$month"
 
 problem=$(curl "${url}" \
   | jq '.results[]' \
-  | jq "select(.date == \"$date 00:00:00\")" \
+  | jq "select(.date == \"$year-$month-$day 00:00:00\")" \
   | jq '{name: .problem_name, url: .problem_url}')
 
-xdg-open $(echo $problem | jq '.url' | tr -d '"')
+url=$(echo $problem | jq '.url' | tr -d '"')
+name=$(echo $problem | jq '.name' | tr -d '"')
 
-mkdir "$PWD/$(sed 's|-|/|g' <<< $date) $(echo $problem | jq '.name' | tr -d '"')/"
+xdg-open "${url}"
+
+path="$year/$month/$day ${name}"
+
+mkdir -p "${path}"
